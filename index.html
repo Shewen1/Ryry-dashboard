@@ -1,24 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Ryder Dashboard</title>
 
-async function testConnection() {
-
-    const { data, error } = await supabase
-        .from("wallet")
-        .select("*");
-
-    console.log(data);
-    console.log(error);
-
-}
-
-testConnection();
-
 <style>
+
 body{
     font-family:Arial,sans-serif;
     background:#121212;
@@ -29,25 +20,24 @@ body{
 
 h1{
     text-align:center;
-    margin-bottom:30px;
 }
 
 .container{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:30px;
+    max-width:500px;
+    margin:auto;
 }
 
 .card{
     background:#1f1f1f;
-    padding:20px;
+    padding:25px;
     border-radius:15px;
-    box-shadow:0 0 10px rgba(0,0,0,.4);
+    box-shadow:0 0 10px rgba(0,0,0,.5);
+    margin-top:30px;
 }
 
 input{
     width:100%;
-    padding:10px;
+    padding:12px;
     margin:8px 0;
     border:none;
     border-radius:8px;
@@ -55,317 +45,254 @@ input{
 }
 
 button{
-    padding:10px 15px;
-    margin:5px;
+
+    padding:12px 20px;
     border:none;
     border-radius:8px;
     cursor:pointer;
     font-weight:bold;
+    margin-top:10px;
+
 }
 
-.add{
+.signup{
     background:#00b894;
     color:white;
 }
 
-.plus{
+.login{
     background:#0984e3;
     color:white;
 }
 
-.minus{
-    background:#d63031;
-    color:white;
-}
+#message{
 
-.delete{
-    background:#555;
-    color:white;
-}
-
-.person,.item{
-    background:#2b2b2b;
-    padding:15px;
-    border-radius:10px;
-    margin-top:15px;
-}
-
-img{
-    width:100px;
-    height:100px;
-    object-fit:cover;
-    border-radius:10px;
-    margin-top:10px;
-}
-
-.total{
-    font-size:22px;
+    margin-top:20px;
     color:#55efc4;
-    margin-bottom:20px;
+
 }
 
-label{
-    color:#ccc;
-}
 
-@media(max-width:900px){
-.container{
-grid-template-columns:1fr;
-}
-}
 </style>
 
 </head>
 
+
 <body>
 
-<h1>💰 Ryder's Wallet & Shopping Dashboard</h1>
+
+<h1>💰 Ryder Dashboard</h1>
+
 
 <div class="container">
 
-<div class="card">
-
-<h2>Wallet Tracker</h2>
-
-<div class="total">
-Total Money: $<span id="total">0.00</span>
-</div>
-
-<input id="personName" placeholder="Customer Name">
-
-<input id="personAmount" type="number" step="0.01" placeholder="Starting Amount">
-
-<button class="add" onclick="addPerson()">Add Person</button>
-
-<div id="people"></div>
-
-</div>
 
 <div class="card">
 
-<h2>Shopping List</h2>
-
-<input id="itemName" placeholder="Item Name">
-
-<input id="itemImage" placeholder="Image URL">
-
-<input
-id="itemOriginal"
-type="number"
-step="0.01"
-placeholder="Original Price">
-
-<input
-id="itemDiscount"
-type="number"
-step="0.01"
-placeholder="Discounted Price">
-
-<button class="add" onclick="addItem()">Add Item</button>
+<h2>Create Account</h2>
 
 
-<div id="items"></div>
+<input 
+id="signupEmail"
+type="email"
+placeholder="Email">
+
+
+<input 
+id="signupPassword"
+type="password"
+placeholder="Password">
+
+
+<button class="signup" onclick="signUp()">
+Create Account
+</button>
+
+
+
+<hr>
+
+
+
+<h2>Login</h2>
+
+
+<input 
+id="loginEmail"
+type="email"
+placeholder="Email">
+
+
+<input 
+id="loginPassword"
+type="password"
+placeholder="Password">
+
+
+<button class="login" onclick="login()">
+Login
+</button>
+
+
+<p id="message"></p>
+
 
 </div>
 
+
 </div>
 
-const SUPABASE_URL = "YOUR_PROJECT_URL";
-const SUPABASE_KEY = "YOUR_ANON_KEY";
+
+
+
+
+<!-- Supabase Library -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+
+// PUT YOUR SUPABASE DETAILS HERE
+
+const SUPABASE_URL = "https://mhmanuouzwvimpzggltb.supabase.co";
+
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1obWFudW91end2aW1wemdnbHRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1MzcyNjAsImV4cCI6MjEwMDExMzI2MH0.UbSGhPHD59rERQiWAZkbIu9xmRso9hkITKVrq97ZKNc";
+
+
 
 const supabase = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
 
-<script>
-
-let people = JSON.parse(localStorage.getItem("people")) || [];
-let items = JSON.parse(localStorage.getItem("items")) || [];
-
-function save(){
-    localStorage.setItem("people", JSON.stringify(people));
-    localStorage.setItem("items", JSON.stringify(items));
-    render();
-}
-
-function addPerson(){
-
-    const name = document.getElementById("personName").value.trim();
-    const amount = parseFloat(document.getElementById("personAmount").value);
-
-    if(name === "") return;
-
-    people.push({
-        name:name,
-        amount:isNaN(amount) ? 0 : amount
-    });
-
-    document.getElementById("personName").value="";
-    document.getElementById("personAmount").value="";
-
-    save();
-}
-
-function render(){
-
-    const peopleDiv=document.getElementById("people");
-    peopleDiv.innerHTML="";
-
-    let total=0;
-
-    people.forEach((person,index)=>{
-
-        total += person.amount;
-
-        peopleDiv.innerHTML += `
-        <div class="person">
-
-            <h3>${person.name}</h3>
-
-            <p><strong>Wallet Balance:</strong> $${person.amount.toFixed(2)}</p>
-
-            <input
-                id="change${index}"
-                type="number"
-                step="0.01"
-                placeholder="Enter amount">
-
-            <button class="plus" onclick="changeAmount(${index}, true)">
-                ➕ Add Money
-            </button>
-
-            <button class="minus" onclick="changeAmount(${index}, false)">
-                ➖ Remove Money
-            </button>
-
-            <button class="delete" onclick="removePerson(${index})">
-                Delete
-            </button>
-
-        </div>
-        `;
-    });
-
-    document.getElementById("total").innerText = total.toFixed(2);
-
-    const itemDiv=document.getElementById("items");
-    itemDiv.innerHTML="";
-
-    items.forEach((item,index)=>{
-
-    const original = item.original || 0;
-    const discount = item.discount || 0;
-    const saving = original - discount;
-const percent = original > 0 ? ((saving / original) * 100).toFixed(1) : 0;
 
 
-    itemDiv.innerHTML += `
-    <div class="item">
-
-        <h3>${item.name}</h3>
-
-        <img src="${item.image}" onerror="this.style.display='none'">
-
-        <p><strong>Original Price:</strong> $${original.toFixed(2)}</p>
-
-        <p><strong>Discount Price:</strong> $${discount.toFixed(2)}</p>
-
-        <p style="color:#55efc4;">
-    <strong>You Save:</strong> $${saving.toFixed(2)} (${percent}% Off)
-</p>
 
 
-        <label>
-            <input
-                type="checkbox"
-                ${item.done ? "checked" : ""}
-                onchange="toggle(${index})">
-            Purchased
-        </label>
+async function signUp(){
 
-        <br><br>
 
-        <button class="delete" onclick="removeItem(${index})">
-            Delete
-        </button>
+const email =
+document.getElementById("signupEmail").value;
 
-    </div>
-    `;
+
+const password =
+document.getElementById("signupPassword").value;
+
+
+
+const {data,error} =
+await supabase.auth.signUp({
+
+email:email,
+password:password
+
 });
 
 
-}
 
-function changeAmount(index, add){
+if(error){
 
-    const input = document.getElementById("change"+index);
+message(error.message);
 
-    let amount = parseFloat(input.value);
+}else{
 
-    if(isNaN(amount) || amount <= 0){
-        alert("Please enter a valid amount.");
-        return;
-    }
+message("Account created! Check your email.");
 
-    if(add){
-        people[index].amount += amount;
-    }else{
-        people[index].amount -= amount;
-    }
-
-    input.value="";
-
-    save();
-}
-
-function removePerson(index){
-    people.splice(index,1);
-    save();
-}
-
-function addItem(){
-
-    const name = document.getElementById("itemName").value.trim();
-    const image = document.getElementById("itemImage").value.trim();
-
-    const original = parseFloat(document.getElementById("itemOriginal").value);
-    const discount = parseFloat(document.getElementById("itemDiscount").value);
-
-    if(name === "") return;
-
-    items.push({
-        name: name,
-        image: image,
-        original: isNaN(original) ? 0 : original,
-        discount: isNaN(discount) ? 0 : discount,
-        done: false
-    });
-
-    document.getElementById("itemName").value = "";
-    document.getElementById("itemImage").value = "";
-    document.getElementById("itemOriginal").value = "";
-    document.getElementById("itemDiscount").value = "";
-
-    save();
 }
 
 
-function toggle(index){
-    items[index].done=!items[index].done;
-    save();
 }
 
-function removeItem(index){
-    items.splice(index,1);
-    save();
+
+
+
+
+
+async function login(){
+
+
+const email =
+document.getElementById("loginEmail").value;
+
+
+const password =
+document.getElementById("loginPassword").value;
+
+
+
+
+const {data,error} =
+await supabase.auth.signInWithPassword({
+
+email:email,
+password:password
+
+});
+
+
+
+
+if(error){
+
+message(error.message);
+
+}else{
+
+message("Login successful!");
+
+console.log(data);
+
 }
 
-render();
+
+}
+
+
+
+
+
+
+function message(text){
+
+document.getElementById("message").innerText=text;
+
+}
+
+
+
+
+// Connection test
+
+async function testDatabase(){
+
+
+const {data,error}=
+
+await supabase
+.from("wallet")
+.select("*");
+
+
+
+console.log("Database test:");
+
+console.log(data);
+
+console.log(error);
+
+
+}
+
+
+testDatabase();
+
+
 
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
 </body>
-</html>
 
+</html>
