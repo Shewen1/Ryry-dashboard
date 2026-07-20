@@ -152,13 +152,14 @@ Login
 
 <script>
 
+// ===============================
+// SUPABASE CONNECTION
+// ===============================
 
-// PUT YOUR SUPABASE DETAILS HERE
-
+// Replace the key below with your anon public key
 const SUPABASE_URL = "https://mhmanuouzwvimpzggltb.supabase.co";
 
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1obWFudW91end2aW1wemdnbHRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1MzcyNjAsImV4cCI6MjEwMDExMzI2MH0.UbSGhPHD59rERQiWAZkbIu9xmRso9hkITKVrq97ZKNc";
-
 
 
 const supabase = window.supabase.createClient(
@@ -168,131 +169,28 @@ const supabase = window.supabase.createClient(
 
 
 
+// ===============================
+// DATABASE CONNECTION TEST
+// ===============================
+
+async function testConnection(){
+
+    const { data, error } = await supabase
+        .from("wallet")
+        .select("*");
 
 
-async function signUp(){
+    console.log("Database test:");
 
+    console.log(data);
 
-const email =
-document.getElementById("signupEmail").value;
-
-
-const password =
-document.getElementById("signupPassword").value;
-
-
-
-const {data,error} =
-await supabase.auth.signUp({
-
-email:email,
-password:password
-
-});
-
-
-
-if(error){
-
-message(error.message);
-
-}else{
-
-message("Account created! Check your email.");
+    console.log(error);
 
 }
 
 
-}
-
-
-
-
-
-
-async function login(){
-
-
-const email =
-document.getElementById("loginEmail").value;
-
-
-const password =
-document.getElementById("loginPassword").value;
-
-
-
-
-const {data,error} =
-await supabase.auth.signInWithPassword({
-
-email:email,
-password:password
-
-});
-
-
-
-
-if(error){
-
-message(error.message);
-
-}else{
-
-message("Login successful!");
-
-console.log(data);
-
-}
-
-
-}
-
-
-
-
-
-
-function message(text){
-
-document.getElementById("message").innerText=text;
-
-}
-
-
-
-
-// Connection test
-
-async function testDatabase(){
-
-
-const {data,error}=
-
-await supabase
-.from("wallet")
-.select("*");
-
-
-
-console.log("Database test:");
-
-console.log(data);
-
-console.log(error);
-
-
-}
-
-
-testDatabase();
+testConnection();
 
 
 
 </script>
-
-
-</body>
-
-</html>
