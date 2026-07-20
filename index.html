@@ -45,14 +45,12 @@ input{
 }
 
 button{
-
     padding:12px 20px;
     border:none;
     border-radius:8px;
     cursor:pointer;
     font-weight:bold;
     margin-top:10px;
-
 }
 
 .signup{
@@ -66,105 +64,82 @@ button{
 }
 
 #message{
-
     margin-top:20px;
     color:#55efc4;
-
+    font-weight:bold;
 }
-
 
 </style>
 
 </head>
 
-
 <body>
-
 
 <h1>💰 Ryder Dashboard</h1>
 
-
 <div class="container">
-
 
 <div class="card">
 
 <h2>Create Account</h2>
 
-
-<input 
+<input
 id="signupEmail"
 type="email"
 placeholder="Email">
 
-
-<input 
+<input
 id="signupPassword"
 type="password"
 placeholder="Password">
-
 
 <button class="signup" onclick="signUp()">
 Create Account
 </button>
 
-
-
 <hr>
-
-
 
 <h2>Login</h2>
 
-
-<input 
+<input
 id="loginEmail"
 type="email"
 placeholder="Email">
 
-
-<input 
+<input
 id="loginPassword"
 type="password"
 placeholder="Password">
-
 
 <button class="login" onclick="login()">
 Login
 </button>
 
-
 <p id="message"></p>
 
-
 </div>
 
-
 </div>
-
-
-
-
 
 <!-- Supabase Library -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
 
 // ===============================
 // SUPABASE CONNECTION
 // ===============================
 
-// Replace the key below with your anon public key
 const SUPABASE_URL = "https://mhmanuouzwvimpzggltb.supabase.co";
 
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1obWFudW91end2aW1wemdnbHRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1MzcyNjAsImV4cCI6MjEwMDExMzI2MH0.UbSGhPHD59rERQiWAZkbIu9xmRso9hkITKVrq97ZKNc";
-
+const SUPABASE_KEY = "YOUR_ANON_KEY_HERE";
 
 const supabase = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
 
-
+console.log("✅ Supabase client created");
 
 // ===============================
 // DATABASE CONNECTION TEST
@@ -176,18 +151,87 @@ async function testConnection(){
         .from("wallet")
         .select("*");
 
-
-    console.log("Database test:");
-
+    console.log("Database Test");
     console.log(data);
-
     console.log(error);
 
 }
 
-
 testConnection();
 
 
+// ===============================
+// CREATE ACCOUNT
+// ===============================
+
+async function signUp(){
+
+    const email = document.getElementById("signupEmail").value;
+    const password = document.getElementById("signupPassword").value;
+
+    const message = document.getElementById("message");
+
+    const { data, error } = await supabase.auth.signUp({
+
+        email: email,
+        password: password
+
+    });
+
+    if(error){
+
+        message.style.color = "#ff7675";
+        message.textContent = error.message;
+        console.error(error);
+
+        return;
+    }
+
+    message.style.color = "#55efc4";
+    message.textContent =
+    "✅ Account created! Check your email to verify your account.";
+
+    console.log(data);
+
+}
+
+
+// ===============================
+// LOGIN
+// ===============================
+
+async function login(){
+
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+
+    const message = document.getElementById("message");
+
+    const { data, error } =
+    await supabase.auth.signInWithPassword({
+
+        email: email,
+        password: password
+
+    });
+
+    if(error){
+
+        message.style.color = "#ff7675";
+        message.textContent = error.message;
+        console.error(error);
+
+        return;
+    }
+
+    message.style.color = "#55efc4";
+    message.textContent = "✅ Login successful!";
+
+    console.log(data);
+
+}
 
 </script>
+
+</body>
+</html>
